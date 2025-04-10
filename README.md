@@ -122,15 +122,15 @@ In python, this can be done with the [cosine similarity](https://scikit-learn.or
 ````python
 import scipy.io.wavfile as wavfile
 from sklearn.metrics.pairwise import cosine_similarity
-rate, data = wavfile.read(audio_filename)
-    num_channels = data.shape[1]
-    cosimilarity = None
-    if num_channels == 1:
-        print('Mono audio detected.')
+
+rate, data = wavfile.read('temp.wav')
+num_channels = data.shape[1]
+if num_channels == 1:
+    print('Mono audio detected.')
     cosimilarity = 1
-    elif num_channels == 2:
-        left = data[:, 0]
-        right = data[:, 1]
-        cosimilarity = cosine_similarity(left.reshape(1, -1), right.reshape(1, -1))[0][0]
-    print('Channel cosine similarity: {:.4f}%'.format(cosimilarity * 100))
+elif num_channels == 2:
+    left = data[:, 0]
+    right = data[:, 1]
+    cosimilarity = cosine_similarity(left.reshape(1, -1), right.reshape(1, -1))[0][0]
+print('Channel cosine similarity: {:.4f}%'.format(cosimilarity * 100))
 ````
