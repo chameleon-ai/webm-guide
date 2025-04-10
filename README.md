@@ -127,10 +127,12 @@ rate, data = wavfile.read('temp.wav')
 num_channels = data.shape[1]
 if num_channels == 1:
     print('Mono audio detected.')
-    cosimilarity = 1
+    cosim = 1
 elif num_channels == 2:
     left = data[:, 0]
     right = data[:, 1]
-    cosimilarity = cosine_similarity(left.reshape(1, -1), right.reshape(1, -1))[0][0]
-print('Channel cosine similarity: {:.4f}%'.format(cosimilarity * 100))
+    cosim = cosine_similarity(left.reshape(1, -1),right.reshape(1, -1))[0][0]
+print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 ````
+
+Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track, granting about 1 MB to be used toward the video bitrate on a 3 minute video.
