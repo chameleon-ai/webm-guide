@@ -64,11 +64,17 @@ For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffm
 The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
 
 Ignoring audio, your output video size is easily calculated:\
-`bitrate = size_limit / duration`\
-where your duration is in seconds. Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
+`bitrate = size_limit / duration`\ where duration is in seconds.\
+Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
 Then divide that by 1000 to get Kbps.
 
-So for example, a `30 second` video is `50331648 / 30 = 1677721.6 bits/second`, or `1677kbps`\
-So then to target that bitrate in ffmpeg: `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 21677k`
+So for example, a `30 second` video is `50331648 / 30 = 1677721.6 bits/second`, or `1677kbps`
+
+Then the ffmpeg command is:\
+`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 21677k -an output.webm`
+- `-i` specifies the input file
+- `-c:v` specifies the video codec
+- `-b:v` specifies the video bitrate
+- `-an` means no audio
 
 
