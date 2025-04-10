@@ -99,6 +99,7 @@ Since video is usually more important that audio for perception of quality, you'
 | ----------- | ----------- | ----------- |
 | 320k | 7 MiB | Not pracical except for music under 2:30 from flac
 | 256k | 5.6 MiB | Upper practical limit for music webms
+| 192k | 4.2 MiB | Good for most high quality music
 | 160k | 3.5 MiB | Good for 5.1 surround sound
 | 128k | 2.8 MiB | Good for high quality stereo tracks
 | 112k | 2.5 MiB | If you need a little more than 96k
@@ -113,9 +114,8 @@ Of course for short webms this doesn't matter as much, but the bitrate adds up f
 Keep in mind that if you're getting your stuff from YouTube, that's usually at 128k so don't bother with higher bitrate.
 
 #### Stereo and Mono Mixdown
-The audio is often overlooked, but it's important to understand that tbe bitrate is the total bitrate *across all channels*, meaning that you can save on total bitrate by reducing the number of channels.\
-This is especially pronounced for 5.1 surround sound, so if you're converting a movie clip or something, it's a good idea to mixdown to stereo.\
-In ffmpeg, this is `-ac 2` (2 audio channels, or stereo) or `-ac 1` (1 audio channel, or mono)
+It's important to understand that the bitrate is the total bitrate *across all channels*, meaning that you can save on total bitrate by reducing the number of channels. This is especially pronounced for 5.1 surround sound, so if you're converting a movie clip or something, it's a good idea to mixdown to stereo.\
+In ffmpeg, this is `-ac 2` (2 audio channels) or `-ac 1` (1 audio channel)
 
 We can take this even further by analyzing the similarity of the 2 stereo tracks.\
 In python, this can be done with the [cosine similarity](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html) function of the [scikit-learn](https://pypi.org/project/scikit-learn/#description) package.
@@ -135,4 +135,20 @@ elif num_channels == 2:
 print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 ````
 
-Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track, granting about 1 MB to be used toward the video bitrate on a 3 minute video.
+Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
+
+#### Music webms
+Making a music webm is actually one of the easier things to do with ffmpeg.\
+`ffmpeg -i cover.jpg -i input.mp3 out.webm`\
+However, this will use the default audio bitrate of 96k. We can be more explicit by setting the `-b:a` audio bitrate:\
+`ffmpeg -i cover.jpg -i input.mp3 -b:a 192k out.webm`
+
+We can take this one step further by messing with the keyframes:\
+`ffmpeg -framerate 1 -loop 1 -i cover.jpg -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -g 212 -b:v 100k -t 0:03:32 out.webm`
+- `-g` sets the [group-of-pictures](https://www.veneratech.com/understanding-gop-what-is-group-of-pictures-and-why-is-it-important/) interval to match the duration of the song, effectively making a video that only has one keyframe.
+- Note that 212 seconds = 3:32, the duration of the song
+- Even though the video bitrate `-b:v` is set to the high value of 100k, this is an upper limit. The final webm video stream will be extremely small.
+
+Doing it with an animated gif is a little more tricky since you have to tell it to loop the gif for the duration of the song.
+`ffmpeg -ignore_loop 0 -i dancing_baby.gif -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -b:v 108k -t 0:03:32 out.webm`
+
