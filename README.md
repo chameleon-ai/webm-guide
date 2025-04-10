@@ -97,13 +97,13 @@ Since video is usually more important that audio for perception of quality, you'
 
 | Bitrate | Size at 3 minutes | Comments |
 | ----------- | ----------- | ----------- |
-| 320k | 7 MiB | Not pracical unless you encoded music under 2:30 from flac
+| 320k | 7 MiB | Not pracical except for music under 2:30 from flac
 | 256k | 5.6 MiB | Upper practical limit for music webms
 | 160k | 3.5 MiB | Good for 5.1 surround sound
 | 128k | 2.8 MiB | Good for high quality stereo tracks
 | 112k | 2.5 MiB | If you need a little more than 96k
 | 96k | 2.1 MiB | Good default
-| 80k | 1.8 MiB | If the source is mostly speaking, you won't notice a difference from 96k
+| 80k | 1.8 MiB | You can probably get away with this most of the time
 | 64k | 1.4 MiB | High quality mono track
 | 56k | 1.3 MiB | Decent quality for most mono applications
 | 48k | 1.1 MiB | Lower quality but you can usually get away with it
