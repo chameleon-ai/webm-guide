@@ -64,7 +64,7 @@ For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffm
 The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
 
 Ignoring audio, your output video size is easily calculated:\
-`bitrate = size_limit / duration`\ where duration is in seconds.\
+`bitrate = size_limit / duration` where duration is in seconds.\
 Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
 Then divide that by 1000 to get Kbps.
 
@@ -89,4 +89,7 @@ If you want to encode only the audio portion, the ffmpeg command is:\
 - `-b:a` specifies the audio bitrate
 
 Generally, you can estimate the audio size using the audio bitrate and duration. However, the actual size can vary depending on how well it's compressed. In order to get the most accurate size, render the audio using the command above and get the size of that file. Then, subtract that from the total file size limit to get the video size limit. Rendering audio is extremely fast, so this step doesn't take long at all compared to video encoding.
+
+#### Audio Bitrates
+Choosing the right audio bitrate isn't as straightforward as video. In general you can go with 96k by default, but there are other considerations.
 
