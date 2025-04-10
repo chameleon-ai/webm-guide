@@ -93,3 +93,20 @@ Generally, you can estimate the audio size using the audio bitrate and duration.
 #### Audio Bitrates
 Choosing the right audio bitrate isn't as straightforward as video. In general you can go with 96k by default, but there are other considerations.
 
+Since video is usually more important that audio for perception of quality, you'll want to use the lowest audio bitrate you can get away with. This table will give you a good idea of how much space your audio takes up:
+
+| Bitrate | Size at 3 minutes |
+| ----------- | ----------- |
+| 320k | 7 MiB |
+| 256k | 5.6 MiB | 
+| 160k | 3.5 MiB | 
+| 128k | 2.8 MiB | 
+| 112k | 2.5 MiB | 
+| 96k | 2.1 MiB | 
+| 80k | 1.8 MiB | 
+| 64k | 1.4 MiB | 
+| 56k | 1.3 MiB | 
+| 48k | 1.1 MiB | 
+| 32k | 721 KiB | 
+
+Of course for short webms this doesn't matter as much, but the bitrate adds up for long duration webms.
