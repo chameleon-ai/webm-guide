@@ -53,7 +53,22 @@ Some systems display local file sizes in MB. So if you see that your file is 6.2
 
 When specifying bitrates in ffmpeg, the prefix `k` means Kilobits, so it's important to keep in mind that you're using the base 1000 definition of the term as well as *bits* so you have to divide by 8 to get bytes.
 
-Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KiB and you want a file under 6144 or 4096 KiB
+Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KB and you want a file under 6144 or 4096
 
+## ffmpeg
+You're going to be using ffmpeg to make webms, bottom line. Every solution out there is some kind of ffmpeg wrapper, so even if you use a nice wrapper like Handbrake, it helps to know ffmpeg.
+
+### Constant/Constrained Quality vs Average/Variable Bitrate
+For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffmpeg.org/wiki/Encode/H.264)) encoding you have 2 methods: constrained quality (CRF) and average bitrate. For your typical non-4chan use-case you probably want CRF, but this produces a variable bit-rate that makes the file size unpredictable. You will get a *consistent* quality, but not the *best* possible quality, because at the end of the day, it all boils down to video bitrate. CRF is just a way of telling ffmpeg that you don't care about the specific bitrate or size, just make the perceived quality consistent. If you use CRF you'll just end up making webms too big or too small.
+
+The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
+
+Ignoring audio, your output video size is easily calculated:\
+`bitrate = size_limit / duration`\
+where your duration is in seconds. Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
+Then divide that by 1000 to get Kbps.
+
+So for example, a `30 second` video is `50331648 / 30 = 1677721.6 bits/second`, or `1677kbps`\
+So then to target that bitrate in ffmpeg: `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 21677k`
 
 
