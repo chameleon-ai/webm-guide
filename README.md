@@ -95,18 +95,19 @@ Choosing the right audio bitrate isn't as straightforward as video. In general y
 
 Since video is usually more important that audio for perception of quality, you'll want to use the lowest audio bitrate you can get away with. This table will give you a good idea of how much space your audio takes up:
 
-| Bitrate | Size at 3 minutes |
-| ----------- | ----------- |
-| 320k | 7 MiB |
-| 256k | 5.6 MiB | 
-| 160k | 3.5 MiB | 
-| 128k | 2.8 MiB | 
-| 112k | 2.5 MiB | 
-| 96k | 2.1 MiB | 
-| 80k | 1.8 MiB | 
-| 64k | 1.4 MiB | 
-| 56k | 1.3 MiB | 
-| 48k | 1.1 MiB | 
-| 32k | 721 KiB | 
+| Bitrate | Size at 3 minutes | Comments |
+| ----------- | ----------- | ----------- |
+| 320k | 7 MiB | Not pracical unless you encoded music under 2:30 from flac
+| 256k | 5.6 MiB | Upper practical limit for music webms
+| 160k | 3.5 MiB | Good for 5.1 surround sound
+| 128k | 2.8 MiB | Good for high quality stereo tracks
+| 112k | 2.5 MiB | If you need a little more than 96k
+| 96k | 2.1 MiB | Good default
+| 80k | 1.8 MiB | If the source is mostly speaking, you won't notice a difference from 96k
+| 64k | 1.4 MiB | High quality mono track
+| 56k | 1.3 MiB | Decent quality for most mono applications
+| 48k | 1.1 MiB | Lower quality but you can usually get away with it
+| 32k | 721 KiB | Noticably degraded, don't recommend
 
 Of course for short webms this doesn't matter as much, but the bitrate adds up for long duration webms.
+Keep in mind that if you're getting your stuff from YouTube, that's usually at 128k so don't bother with higher bitrate.
