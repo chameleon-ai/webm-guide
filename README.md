@@ -111,3 +111,26 @@ Since video is usually more important that audio for perception of quality, you'
 
 Of course for short webms this doesn't matter as much, but the bitrate adds up for long duration webms.
 Keep in mind that if you're getting your stuff from YouTube, that's usually at 128k so don't bother with higher bitrate.
+
+#### Stereo and Mono Mixdown
+The audio is often overlooked, but it's important to understand that tbe bitrate is the total bitrate *across all channels*, meaning that you can save on total bitrate by reducing the number of channels.\
+This is especially pronounced for 5.1 surround sound, so if you're converting a movie clip or something, it's a good idea to mixdown to stereo.\
+In ffmpeg, this is `-ac 2` (2 audio channels, or stereo) or `-ac 1` (1 audio channel, or mono)
+
+We can take this even further by analyzing the similarity of the 2 stereo tracks.\
+In python, this can be done with the [cosine similarity](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html) function of the [scikit-learn](https://pypi.org/project/scikit-learn/#description) package.
+````python
+import scipy.io.wavfile as wavfile
+from sklearn.metrics.pairwise import cosine_similarity
+rate, data = wavfile.read(audio_filename)
+    num_channels = data.shape[1]
+    cosimilarity = None
+    if num_channels == 1:
+        print('Mono audio detected.')
+    cosimilarity = 1
+    elif num_channels == 2:
+        left = data[:, 0]
+        right = data[:, 1]
+        cosimilarity = cosine_similarity(left.reshape(1, -1), right.reshape(1, -1))[0][0]
+    print('Channel cosine similarity: {:.4f}%'.format(cosimilarity * 100))
+````
