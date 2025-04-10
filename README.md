@@ -71,10 +71,22 @@ Then divide that by 1000 to get Kbps.
 So for example, a `30 second` video is `50331648 / 30 = 1677721.6 bits/second`, or `1677kbps`
 
 Then the ffmpeg command is:\
-`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 21677k -an output.webm`
+`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1677k -an output.webm`
 - `-i` specifies the input file
 - `-c:v` specifies the video codec
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
 
+### Audio
+Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
+For webm the audio codec is [libopus](https://ffmpeg.org/ffmpeg-codecs.html#libopus).
+
+If you want to encode only the audio portion, the ffmpeg command is:\
+`ffmpeg -i input.mp4 -vn -c:a libopus -b:a 128k output.ogg`
+- `-i` specifies the input file
+- `-vn` specifies no video
+- `-c:a` specifies the audio codec
+- `-b:a` specifies the audio bitrate
+
+Generally, you can estimate the audio size using the audio bitrate and duration. However, the actual size can vary depending on how well it's compressed. In order to get the most accurate size, render the audio using the command above and get the size of that file. Then, subtract that from the total file size limit to get the video size limit. Rendering audio is extremely fast, so this step doesn't take long at all compared to video encoding.
 
