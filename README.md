@@ -17,6 +17,7 @@ Contents:
 - [ffmpeg](#ffmpeg)
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
     - [Calculating Video Size](#calculating-video-size)
+  - [Deadline and Multithreading](#deadline-and-multithreading)
   - [Clipping](#clipping)
   - [Filters](#filters)
     - [Complex Filters](#complex-filters)
@@ -36,8 +37,10 @@ tl;dr here's what you do up front
   - 192k for music
   - 96k for everything else
   - 56k mono if you need to save space
-- Pick a good resolution, use lookup table for ballpark
-- Calculate your video bitrate according to the duration of the video, account for audio size, or use the lookup table:
+- Pick a resolution, use lookup table for ballpark
+- Hopefully you're using a tool that can calculate target size, but if not:
+  - Calculate video bitrate using [this](#making-precisely-sized-webms) method
+  - Or use the lookup table:
 
 | Duration | Resolution | Bitrate | Bitrate | Bitrate |
 | | | (6 MiB) | (4 MiB w/ audio) | (4 MiB no audio) |
@@ -132,6 +135,15 @@ Then the ffmpeg command is:\
 - `-c:v` specifies the video codec
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
+
+## Deadline and Multithreading
+[libvpx-vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) has a couple options that affect quality and enconding speed.
+
+- Speed up encoding a little by enabling [row-based multithreading](https://trac.ffmpeg.org/wiki/Encode/VP9#rowmt) (`-row-mt 1`)
+- The [deadline](https://trac.ffmpeg.org/wiki/Encode/VP9#DeadlineQuality) option changes the encode quality
+  - The default deadline is `good`, and I recommend using this most of the time
+  - If you don't care about waiting, use `-deadline best`. It will take significantly longer to encode, but the quality will be somewhat higher.
+  - Get a significant speed-up at the cost of quality with `-deadline realtime`
 
 ## Clipping
 You can directly make a webm of any time slice using [seeking](https://trac.ffmpeg.org/wiki/Seeking):\
@@ -329,7 +341,7 @@ width, height = scale_to_1080(raw_width, raw_height)
 And yes, this is still valid for any resolution because what's being calculated is a *resolution limit*. All `scale_to_1080` does is align the resolution with the baked in assumption in the curve fit, which make sure that smaller inputs don't get reduced in size too much.
 
 # Subtitles
-Subtitle burn-in is pretty easy in ffmpeg using the [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) filter. You can specify external or embedded subs.\
+Subtitle burn-in is pretty easy in ffmpeg using the [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) filter. You can specify external or embedded subs.
 - For internal subs: `-vf subtitles=input.mkv:si=1` where si is the subtitle index.
 - For external subs: `-vf subtitles=subs.ass`
 
