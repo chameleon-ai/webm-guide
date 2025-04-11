@@ -138,8 +138,9 @@ print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
 
 #### Music webms
-Making a music webm is actually one of the easier things to do with ffmpeg.\
-`ffmpeg -i cover.jpg -i input.mp3 out.webm`\
+Making a music webm is actually one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
+`ffmpeg -i cover.jpg -i input.mp3 out.webm`
+
 However, this will use the default audio bitrate of 96k. We can be more explicit by setting the `-b:a` audio bitrate:\
 `ffmpeg -i cover.jpg -i input.mp3 -b:a 192k out.webm`
 
@@ -149,6 +150,8 @@ We can take this one step further by messing with the keyframes:\
 - Note that 212 seconds = 3:32, the duration of the song
 - Even though the video bitrate `-b:v` is set to the high value of 100k, this is an upper limit. The final webm video stream will be extremely small.
 
-Doing it with an animated gif is a little more tricky since you have to tell it to loop the gif for the duration of the song.
+Doing it with an animated gif is a little more tricky:\
 `ffmpeg -ignore_loop 0 -i dancing_baby.gif -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -b:v 108k -t 0:03:32 out.webm`
+- `-ignore_loop 0` will cause the gif to continually loop
+- `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
 
