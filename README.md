@@ -7,6 +7,15 @@ If you just care about the webm software:
 If you want to learn how to webm, read on.\
 [ 	![image.jpg](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)
 
+[Codecs and Containers](#Codecs-and-Containers)
+[webm vs mp4](#webm-vs-mp4)
+[Size and Length Limits](#Size-and-Length-Limits)
+[Constant/Constrained Quality vs Average/Variable Bitrate](#Constant/Constrained-Quality-vs-Average/Variable-Bitrate)
+[Audio](#Audio)
+[Audio Bitrates](#Audio-Bitrates)
+[Stereo and Mono Mixdown](#Stereo-and-Mono-Mixdown)
+[Music webms](#Music-webms)
+[Resolution](#Resolution)
 
 ## Codecs and Containers
 webm is a container format that is a modified form of [.mkv](https://www.matroska.org/what_is_matroska.html)\
