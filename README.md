@@ -68,7 +68,10 @@ When specifying bitrates in ffmpeg, the prefix `k` means Kilobits, so it's impor
 Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KB and you want a file under 6144 or 4096
 
 # ffmpeg
-You're going to be using ffmpeg to make webms, bottom line. Every solution out there is some kind of ffmpeg wrapper, so even if you use a nice wrapper like Handbrake, it helps to know ffmpeg.
+https://files.catbox.moe/rklvkb.png
+[ 	![image.jpg](https://files.catbox.moe/rklvkb.png)](https://files.catbox.moe/rklvkb.png)
+
+Every solution out there is some kind of ffmpeg wrapper, so even if you use a GUI, the concepts discussed below still apply. The raw commands just might be presented in a different way.
 
 ## CRF vs Average Bitrate
 For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffmpeg.org/wiki/Encode/H.264)) encoding you have 2 methods: constrained quality (CRF) and average bitrate. For your typical non-4chan use-case you probably want CRF, but this produces a variable bit-rate that makes the file size unpredictable. You will get a *consistent* quality, but not the *best* possible quality, because at the end of the day, it all boils down to video bitrate. CRF is just a way of telling ffmpeg that you don't care about the specific bitrate or size, just make the perceived quality consistent. If you use CRF you'll just end up making webms too big or too small.
