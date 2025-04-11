@@ -7,15 +7,16 @@ If you just care about the webm software:
 If you want to learn how to webm, read on.\
 [ 	![image.jpg](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)
 
-[Codecs and Containers](#Codecs-and-Containers)
-[webm vs mp4](#webm-vs-mp4)
-[Size and Length Limits](#Size-and-Length-Limits)
-[Constant/Constrained Quality vs Average/Variable Bitrate](#Constant/Constrained-Quality-vs-Average/Variable-Bitrate)
-[Audio](#Audio)
-[Audio Bitrates](#Audio-Bitrates)
-[Stereo and Mono Mixdown](#Stereo-and-Mono-Mixdown)
-[Music webms](#Music-webms)
-[Resolution](#Resolution)
+Contents:
+- [Codecs and Containers](#Codecs-and-Containers)
+- [webm vs mp4](#webm-vs-mp4)
+- [Size and Length Limits](#Size-and-Length-Limits)
+- [Constant/Constrained Quality vs Average/Variable Bitrate](#Constant/Constrained-Quality-vs-Average/Variable-Bitrate)
+- [Audio](#Audio)
+  - [Audio Bitrates](#Audio-Bitrates)
+  - [Stereo and Mono Mixdown](#Stereo-and-Mono-Mixdown)
+  - [Music webms](#Music-webms)
+- [Resolution](#Resolution)
 
 ## Codecs and Containers
 webm is a container format that is a modified form of [.mkv](https://www.matroska.org/what_is_matroska.html)\
@@ -64,10 +65,10 @@ When specifying bitrates in ffmpeg, the prefix `k` means Kilobits, so it's impor
 
 Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KB and you want a file under 6144 or 4096
 
-## ffmpeg
+# ffmpeg
 You're going to be using ffmpeg to make webms, bottom line. Every solution out there is some kind of ffmpeg wrapper, so even if you use a nice wrapper like Handbrake, it helps to know ffmpeg.
 
-### Constant/Constrained Quality vs Average/Variable Bitrate
+## Constant/Constrained Quality vs Average/Variable Bitrate
 For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffmpeg.org/wiki/Encode/H.264)) encoding you have 2 methods: constrained quality (CRF) and average bitrate. For your typical non-4chan use-case you probably want CRF, but this produces a variable bit-rate that makes the file size unpredictable. You will get a *consistent* quality, but not the *best* possible quality, because at the end of the day, it all boils down to video bitrate. CRF is just a way of telling ffmpeg that you don't care about the specific bitrate or size, just make the perceived quality consistent. If you use CRF you'll just end up making webms too big or too small.
 
 The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
@@ -86,7 +87,7 @@ Then the ffmpeg command is:\
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
 
-### Audio
+## Audio
 Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
 For webm the audio codec is [libopus](https://ffmpeg.org/ffmpeg-codecs.html#libopus).
 
@@ -99,7 +100,7 @@ If you want to encode only the audio portion, the ffmpeg command is:\
 
 Generally, you can estimate the audio size using the audio bitrate and duration. However, the actual size can vary depending on how well it's compressed. In order to get the most accurate size, render the audio using the command above and get the size of that file. Then, subtract that from the total file size limit to get the video size limit. Rendering audio is extremely fast, so this step doesn't take long at all compared to video encoding.
 
-#### Audio Bitrates
+### Audio Bitrates
 Choosing the right audio bitrate isn't as straightforward as video. In general you can go with 96k by default, but there are other considerations.
 
 Since video is usually more important that audio for perception of quality, you'll want to use the lowest audio bitrate you can get away with. This table will give you a good idea of how much space your audio takes up:
@@ -122,7 +123,7 @@ Since video is usually more important that audio for perception of quality, you'
 Of course for short webms this doesn't matter as much, but the bitrate adds up for long duration webms.
 Keep in mind that if you're getting your stuff from YouTube, that's usually at 128k so don't bother with higher bitrate.
 
-#### Stereo and Mono Mixdown
+### Stereo and Mono Mixdown
 It's important to understand that the bitrate is the total bitrate *across all channels*, meaning that you can save on total bitrate by reducing the number of channels. This is especially pronounced for 5.1 surround sound, so if you're converting a movie clip or something, it's a good idea to mixdown to stereo.\
 In ffmpeg, this is `-ac 2` (2 audio channels) or `-ac 1` (1 audio channel)
 
@@ -146,7 +147,7 @@ print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 
 Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
 
-#### Music webms
+### Music webms
 Making a music webm is one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
 `ffmpeg -i cover.jpg -i input.mp3 out.webm`
 
@@ -164,7 +165,7 @@ Doing it with an animated gif is a little more tricky:\
 - `-ignore_loop 0` will cause the gif to continually loop
 - `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
 
-### Resolution
+# Resolution
 Obviously you don't want to keep the original resolution most of the time, but the trick is figuring out the right resolution.
 The table below is a good start:
 
