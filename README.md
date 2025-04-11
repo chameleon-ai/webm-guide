@@ -17,6 +17,7 @@ Contents:
   - [Clipping](#clipping)
   - [Filters](#filters)
     - [Complex Filters](#complex-filters)
+  - [Multiple Audio Tracks](#multiple-audio-tracks)
 - [Audio](#audio)
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
@@ -121,6 +122,20 @@ One use case for this is to take multiple segments of a video and concatenate th
 
 I'm not going to conver complex filters here, but read [this](https://trac.ffmpeg.org/wiki/FilteringGuide) and [this](https://medium.com/craftsmenltd/ffmpeg-basic-filter-graphs-74f287dc104e) and [this](https://lav.io/notes/ffmpeg-explorer/) if you're interested.
 
+## Multiple Audio Tracks
+How do we handle containers with multiple audio tracks? First, you have to figure out the index of the track by either inspecting it in a video player or with ffprobe:\
+`ffprobe -v error -show_entries stream=index:stream_tags=language -select_streams a -of csv=p=0 input.mkv`\
+This will show you something like this:\
+````
+1,eng
+2,jpn
+````
+
+One minor quirk is that the index shown is not the index you need to specify in ffmpeg. To get the real index, start with 0 and count up from there.\
+Then, in ffmpeg you can use `-map` to specify the audio index.
+- `-map 0:a:0` would select the first track (english)
+- `-map 0:a:1` would select the second track (japanese)
+
 # Audio
 Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
 For webm the audio codec is [libopus](https://ffmpeg.org/ffmpeg-codecs.html#libopus).
@@ -200,7 +215,7 @@ Doing it with an animated gif is a little more tricky:\
 - `-ignore_loop 0` will cause the gif to continually loop
 - `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
 
-## Making Precisely Sized webms
+# Making Precisely Sized webms
 Using all the above knowledge, we now know how to make a webm using 3 passes:
 - Render the audio: `ffmpeg -i input.mp4 -vn -c:a libopus -b:a 96k output.ogg`
   - Get the size of the audio file in bytes
