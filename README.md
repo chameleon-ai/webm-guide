@@ -222,7 +222,10 @@ Using all the above knowledge, we now know how to make a webm using 3 passes:
 - Render the audio: `ffmpeg -i input.mp4 -vn -c:a libopus -b:a 96k output.ogg`
   - Get the size of the audio file in bytes
   - Lookup the size limit in bytes (`6 * 1024 * 1024` or `4 * 1024 * 1024`)
-  - `bitrate = (size_limit - audio_size) * 8 / 1000` that's your video bitrate in kbps. For this example let's say it's 715.
+  - `video_size = size_limit - audio_size`
+  - Get the total `duration` of the video in seconds
+  - `bitrate = video_size / duration` that's your video bitrate in Bytes per second
+  - `bitrate_kbps = bitrate * 8 / 1000` that's your video bitrate in Kilobits per second. For this example let's say it's 715.
 - Run ffmpeg 1st pass
   - `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 715k -async 1 -vsync 2 -pass 1 -an -f null /dev/null`
   - or `NUL` instead of `/dev/null` if you're using Windows
