@@ -38,7 +38,8 @@ tl;dr here's what you do up front
 - Pick a good resolution, use lookup table for ballpark
 - Calculate your video bitrate according to the duration of the video, account for audio size, or use the lookup table:
 
-| Duration | Resolution | Bitrate   (6 MiB) | Bitrate   (4 MiB w/ audio) | Bitrate   (4 MiB no audio)
+| Duration | Resolution | Bitrate | Bitrate | Bitrate |
+| | | (6 MiB) | (4 MiB w/ audio) | (4 MiB no audio) |
 | ----------- | ----------- | ----------- | ----------- | ----------- |
 | < 30 seconds | 1920x1080 | 1500k | 990k | 1090k |
 | 0:30 - 0:45 | 1600x900 | 1000k | 630k | 725k |
