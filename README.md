@@ -275,6 +275,7 @@ Obviously you don't want to keep the original resolution most of the time, but t
 The table below is a good start:
 
 ## Resolution Lookup Table
+
 | Duration | Size |
 | ----------- | ----------- |
 | < 30 seconds | 1920 x 1080 |
