@@ -200,7 +200,8 @@ So really, you need to account for the size of the audio just like when determin
 
 ````python
 total_pixels = width * height
-x = target_bitrate * total_pixels # Factor in the total resolution of the image and the bit rate
+# Factor in the total resolution of the image and the bit rate
+x = target_bitrate * total_pixels
 # Calculate the ideal resolution using logarithmic curve: y = a * ln(x/b)
 a = 2.311e-01
 b = 3.547e+01
