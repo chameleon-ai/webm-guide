@@ -11,7 +11,7 @@ Contents:
 - [Codecs and Containers](#Codecs-and-Containers)
 - [webm vs mp4](#webm-vs-mp4)
 - [Size and Length Limits](#Size-and-Length-Limits)
-- [Constant/Constrained Quality vs Average/Variable Bitrate](#Constant/Constrained-Quality-vs-Average/Variable-Bitrate)
+- [CRF vs Average Bitrate](#CRF-vs-Average-Bitrate)
 - [Audio](#Audio)
   - [Audio Bitrates](#Audio-Bitrates)
   - [Stereo and Mono Mixdown](#Stereo-and-Mono-Mixdown)
@@ -68,7 +68,7 @@ Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/
 # ffmpeg
 You're going to be using ffmpeg to make webms, bottom line. Every solution out there is some kind of ffmpeg wrapper, so even if you use a nice wrapper like Handbrake, it helps to know ffmpeg.
 
-## Constant/Constrained Quality vs Average/Variable Bitrate
+## CRF vs Average Bitrate
 For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffmpeg.org/wiki/Encode/H.264)) encoding you have 2 methods: constrained quality (CRF) and average bitrate. For your typical non-4chan use-case you probably want CRF, but this produces a variable bit-rate that makes the file size unpredictable. You will get a *consistent* quality, but not the *best* possible quality, because at the end of the day, it all boils down to video bitrate. CRF is just a way of telling ffmpeg that you don't care about the specific bitrate or size, just make the perceived quality consistent. If you use CRF you'll just end up making webms too big or too small.
 
 The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
