@@ -211,4 +211,17 @@ scaled_height = scaled_pixels / width
 scaled_width = scaled_pixels / height
 calculated_resolution = max(scaled_height, scaled_width)
 ````
-Ok, `a` and `b` are just magic numbers here, but this is a curve fit that lines up with the table above. The difference between this and the lookup table is that now this scales with the target bitrate, so the audio size is a factor and can change the target resolution.
+This is a [curve fit](https://curve.fit) that lines up with the table above. The difference between this and the lookup table is that now this scales with the target bitrate, so the audio size is a factor and can change the target resolution.
+
+But we still have a problem. The original table has a baked-in assumption: The input is 1080p.\
+To correct for this, we have to scale the input to 1080p so that the curve gives us a sane scale factor.
+````
+# Scales resolution sources to 1080p to match the calibrated resolution curve
+def scale_to_1080(width, height):
+    min_dimension = min(width, height)
+    scale_factor = 1080 / min_dimension
+    return [width * scale_factor, height * scale_factor]
+
+width, height = scale_to_1080(raw_width, raw_height)
+````
+And yes, this is still valid for any resolution because what's being calculated is a *resolution limit*. All `scale_to_1080` does is align the resolution with the baked in assumption in the curve fit, which make sure that smaller inputs don't get reduced in size too much.
