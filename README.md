@@ -72,7 +72,7 @@ If you come across a webm (or any container) and you want to know what's in it, 
 # webm vs mp4
 4chan supports only [h264](https://trac.ffmpeg.org/wiki/Encode/H.264) video with [aac](https://trac.ffmpeg.org/wiki/Encode/AAC) audio for mp4, so for the purposes of comparison, I'm talking about vp9+opus webm vs h264+aac mp4.\
 Side note: If you mix vp9+aac or h264+opus, you're gonna create an mkv that can't be posted to 4chan.
-- **Contrary to popular belief, vp9 is not objectively superior to vp9 in all circumstances.**
+- **Contrary to popular belief, vp9 is not objectively superior to h264 in all circumstances.**
 - Generally speaking, opus is better than aac. So if you're going for music, like a static image with high quality audio, use webm.
 - h264 encoding is *much* faster than vp9
 - h264 better preserves film grain and fine detail *at an adequate bitrate*, meaning that mp4 is better for short high quality clips of live action movies and the like
@@ -330,7 +330,7 @@ calculated_resolution = max(scaled_height, scaled_width)
 This is a [curve fit](https://curve.fit) that lines up with the table above. The difference between this and the lookup table is that now this scales with the target bitrate, so the audio size is a factor and can change the target resolution.
 
 But we still have a problem. The original table has a baked-in assumption: The input is 1080p. To correct for this, we have to scale the input to 1080p so that the curve gives us a sane scale factor.
-````
+````python
 # Scales resolution sources to 1080p to match the calibrated resolution curve
 def scale_to_1080(width, height):
     min_dimension = min(width, height)
