@@ -12,7 +12,8 @@ Contents:
 - [Codecs and Containers](#codecs-and-containers)
 - [webm vs mp4](#webm-vs-mp4)
 - [Size and Length Limits](#size-and-length-limits)
-- [CRF vs Average Bitrate](#crf-vs-average-bitrate)
+- [ffmpeg](#ffmpeg)
+  - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
 - [Audio](#audio)
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
@@ -68,7 +69,6 @@ When specifying bitrates in ffmpeg, the prefix `k` means Kilobits, so it's impor
 Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KB and you want a file under 6144 or 4096
 
 # ffmpeg
-https://files.catbox.moe/rklvkb.png
 [ 	![image.jpg](https://files.catbox.moe/rklvkb.png)](https://files.catbox.moe/rklvkb.png)
 
 Every solution out there is some kind of ffmpeg wrapper, so even if you use a GUI, the concepts discussed below still apply. The raw commands just might be presented in a different way.
