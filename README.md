@@ -138,7 +138,7 @@ print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
 
 #### Music webms
-Making a music webm is actually one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
+Making a music webm is one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
 `ffmpeg -i cover.jpg -i input.mp3 out.webm`
 
 However, this will use the default audio bitrate of 96k. We can be more explicit by setting the `-b:a` audio bitrate:\
@@ -154,4 +154,35 @@ Doing it with an animated gif is a little more tricky:\
 `ffmpeg -ignore_loop 0 -i dancing_baby.gif -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -b:v 108k -t 0:03:32 out.webm`
 - `-ignore_loop 0` will cause the gif to continually loop
 - `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
+
+### Resolution
+Obviously you don't want to keep the original resolution most of the time, but the trick is figuring out the right resolution.
+The table below is a good start:
+
+| Duration | Size |
+| ----------- | ----------- |
+| < 30 seconds | 1920 x 1080 |
+| 0:30 - 0:45 | 1600 x 900 |
+| 0:45 - 1:15 | 1440 x 810 |
+| 1:15 - 2:00 | 1280 x 720 |
+| 2:00 - 2:30 | 1024 x 576 |
+| 2:30 - 3:00 | 960 x 540 |
+| 3:00 - 4:00 | 854 x 480 |
+| 4:00 - 4:45 | 736 x 414 |
+| 4:00 - 5:30 | 640 x 360 |
+| 5:30 - 6:40 | 480 x 270 |
+
+In ffmpeg, changing the resolution is done using the [scale](https://ffmpeg.org/ffmpeg-filters.html#scale-1) video filter.\
+`ffmpeg -i input.mp4 -vf scale=1280:720:force_original_aspect_ratio=decrease output.webm`
+- `-vf` applies a video filter. Multiple filters can be used, but in this case it's just the scale filter.
+- `force_original_aspect_ratio=decrease` ensures that the aspect ratio is preserved when scaling down
+
+But we can generalize this statement to work for any sized input:\
+`-vf scale='min(1280,iw)':'min(1280,ih):force_original_aspect_ratio=decrease'`
+- `min(1280,iw)` and `min(1280,ih)` limits the size in each dimension to 1280 or the input size (`iw` = image width, `ih` = image height), whichever is smaller.
+- So for an input below 1280p this does nothing. And it applies equally to horizontally and vertically oriented videos.
+
+But of course, we can use math to do better than a lookup table. Resolution is better determined as a function of file size and duration. And resolution is better defined by the *total number of pixels* rather than assuming that the input is 16:9 1080p. Because we need a solution that scales well for 3:4 or square videos or whatever.
+
+So really, you need to account for the size of the audio just like when determining the video bitrate. Conveniently, the target video bitrate is exactly what we need because the bitrate itself was determined as a function of file size and duration.
 
