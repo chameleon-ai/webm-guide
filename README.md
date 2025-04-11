@@ -37,6 +37,7 @@ tl;dr here's what you do up front
   - 56k mono if you need to save space
 - Use the [lookup table](#resolution-lookup-table) to determine what resolution to use
 - Calculate your video bitrate according to the duration of the video, account for audio size, or use this lookup table:
+
 | Duration | Bitrate |
 | ----------- | ----------- |
 | < 30 seconds | 1500k |
