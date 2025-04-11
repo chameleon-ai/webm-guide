@@ -145,7 +145,7 @@ elif num_channels == 2:
 print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 ````
 
-Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half. For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
+**Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half.** For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
 
 ### Music webms
 Making a music webm is one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
