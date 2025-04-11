@@ -38,18 +38,18 @@ tl;dr here's what you do up front
 - Use the [lookup table](#resolution-lookup-table) to determine what resolution to use
 - Calculate your video bitrate according to the duration of the video, account for audio size, or use this lookup table:
 
-| Duration | Bitrate |
-| ----------- | ----------- |
-| < 30 seconds | 1500k |
-| 0:30 - 0:45 | 1000k |
-| 0:45 - 1:15 | 550k |
-| 1:15 - 2:00 | 310k |
-| 2:00 - 2:30 | 230k |
-| 2:30 - 3:00 | 175k |
-| 3:00 - 4:00 | 100k |
-| 4:00 - 5:00 | 60k |
-| 5:00 - 6:00 | 35k |
-| 6:00 - 6:40 | 20k |
+| Duration | Bitrate (6 MiB) | Bitrate (4 MiB w/ audio) | Bitrate (4 MiB no audio)
+| ----------- | ----------- | ----------- | ----------- |
+| < 30 seconds | 1500k | 990k | 1090k |
+| 0:30 - 0:45 | 1000k | 630k | 725k |
+| 0:45 - 1:15 | 550k | 335k | 435k |
+| 1:15 - 2:00 | 310k | 175k | 270k |
+| 2:00 - 2:30 | 230k | 120k | - |
+| 2:30 - 3:00 | 175k | 80k | - |
+| 3:00 - 4:00 | 100k | 35k | - |
+| 4:00 - 5:00 | 60k | 8k | - |
+| 5:00 - 6:00 | 35k | - | - |
+| 6:00 - 6:40 | 20k | - | - |
 
 # Codecs and Containers
 webm is a container format that is a modified form of [.mkv](https://www.matroska.org/what_is_matroska.html)\
