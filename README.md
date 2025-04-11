@@ -27,6 +27,7 @@ Contents:
   - [Music webms](#music-webms)
 - [Making Precisely Sized webms](#making-precisely-sized-webms)
 - [Resolution](#resolution)
+- [Subtitles](#subtitles)
 
 # Quick Reference
 tl;dr here's what you do up front
@@ -105,7 +106,7 @@ Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/
 Most of the time, you just need to provide the URL and it will download the best available video by default. There are a couple handy things to know:
 - Download an upcoming or ongoing livestream: `yt-dlp --wait-for-video 30 --live-from-start`
 - Download the auto subtitles: `yt-dlp --write-auto-sub --skip-download`
-- Download only the section from 10:00 to the end of the video `yt-dlp --download-sections "*10:00-inf"`
+- Download only the section from 10:00 to the end of the video: `yt-dlp --download-sections "*10:00-inf"`
 
 # ffmpeg
 [ 	![image.jpg](https://files.catbox.moe/rklvkb.png)](https://files.catbox.moe/rklvkb.png)
@@ -329,8 +330,8 @@ And yes, this is still valid for any resolution because what's being calculated 
 
 # Subtitles
 Subtitle burn-in is pretty easy in ffmpeg using the [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) filter. You can specify external or embedded subs.\
-- For internal subs: `subtitles=input.mkv:si=1` where si is the subtitle index.
-- For external subs: `subtitles=subs.ass`
+- For internal subs: `-vf subtitles=input.mkv:si=1` where si is the subtitle index.
+- For external subs: `-vf subtitles=subs.ass`
 
 You can identify embedded subtitles using ffprobe:\
 `ffprobe -v error -select_streams s -of csv=p=0 -show_entries stream=index:stream_tags=language input.mkv`\
