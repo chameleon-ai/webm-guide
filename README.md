@@ -38,18 +38,18 @@ tl;dr here's what you do up front
 - Pick a good resolution, use lookup table for ballpark
 - Calculate your video bitrate according to the duration of the video, account for audio size, or use the lookup table:
 
-| Duration | Resolution | Bitrate (6 MiB) | Bitrate (4 MiB w/ audio) | Bitrate (4 MiB no audio)
+| Duration | Resolution | Bitrate   (6 MiB) | Bitrate   (4 MiB w/ audio) | Bitrate   (4 MiB no audio)
 | ----------- | ----------- | ----------- | ----------- | ----------- |
-| < 30 seconds | 1920 x 1080 | 1500k | 990k | 1090k |
-| 0:30 - 0:45 | 1600 x 900 | 1000k | 630k | 725k |
-| 0:45 - 1:15 | 1440 x 810 | 550k | 335k | 435k |
-| 1:15 - 2:00 | 1280 x 720 | 310k | 175k | 270k |
-| 2:00 - 2:30 | 1024 x 576 | 230k | 120k | - |
-| 2:30 - 3:00 | 960 x 540 | 175k | 80k | - |
-| 3:00 - 4:00 | 854 x 480 | 100k | 35k | - |
-| 4:00 - 5:00 | 736 x 414 | 60k | 8k | - |
-| 5:00 - 6:00 | 640 x 360 | 35k | - | - |
-| 6:00 - 6:40 | 480 x 270 | 20k | - | - |
+| < 30 seconds | 1920x1080 | 1500k | 990k | 1090k |
+| 0:30 - 0:45 | 1600x900 | 1000k | 630k | 725k |
+| 0:45 - 1:15 | 1440x810 | 550k | 335k | 435k |
+| 1:15 - 2:00 | 1280x720 | 310k | 175k | 270k |
+| 2:00 - 2:30 | 1024x576 | 230k | 120k | - |
+| 2:30 - 3:00 | 960x540 | 175k | 80k | - |
+| 3:00 - 4:00 | 854x480 | 100k | 35k | - |
+| 4:00 - 5:00 | 736x414 | 60k | 8k | - |
+| 5:00 - 6:00 | 640x360 | 35k | - | - |
+| 6:00 - 6:40 | 480x270 | 20k | - | - |
 
 # Codecs and Containers
 webm is a container format that is a modified form of [.mkv](https://www.matroska.org/what_is_matroska.html)\
