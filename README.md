@@ -198,3 +198,16 @@ But of course, we can use math to do better than a lookup table. Resolution is b
 
 So really, you need to account for the size of the audio just like when determining the video bitrate. Conveniently, the target video bitrate is exactly what we need because the bitrate itself was determined as a function of file size and duration.
 
+````python
+total_pixels = width * height
+x = target_bitrate * total_pixels # Factor in the total resolution of the image and the bit rate
+# Calculate the ideal resolution using logarithmic curve: y = a * ln(x/b)
+a = 2.311e-01
+b = 3.547e+01
+scale_factor = a * math.log(target_bitrate/b)
+scaled_pixels = total_pixels * scale_factor
+scaled_height = scaled_pixels / width
+scaled_width = scaled_pixels / height
+calculated_resolution = max(scaled_height, scaled_width)
+````
+Ok, `a` and `b` are just magic numbers here, but this is a curve fit that lines up with the table above. The difference between this and the lookup table is that now this scales with the target bitrate, so the audio size is a factor and can change the target resolution.
