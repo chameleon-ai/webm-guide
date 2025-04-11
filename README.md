@@ -9,6 +9,7 @@ If you want to learn how to webm, read on.\
 [ 	![image.jpg](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)](https://i.kym-cdn.com/photos/images/newsfeed/000/770/315/d8b.jpg)
 
 Contents:
+- [Quick Reference](#quick-reference)
 - [Codecs and Containers](#codecs-and-containers)
 - [webm vs mp4](#webm-vs-mp4)
 - [Size and Length Limits](#size-and-length-limits)
@@ -25,8 +26,31 @@ Contents:
   - [Music webms](#music-webms)
 - [Making Precisely Sized webms](#making-precisely-sized-webms)
 - [Resolution](#resolution)
+  - [Resolution Lookup Table](#resolution-lookup-table)
 
-## Codecs and Containers
+# Quick Reference
+tl;dr here's what you do up front
+- Use vp9 video
+- Use opus audio
+  - 192k for music
+  - 96k for everything else
+  - 56k mono if you need to save space
+- Use the [lookup table](#resolution-lookup-table) to determine what resolution to use
+- Calculate your video bitrate according to the duration of the video, account for audio size, or use this lookup table:
+| Duration | Bitrate |
+| ----------- | ----------- |
+| < 30 seconds | 1500k |
+| 0:30 - 0:45 | 1000k |
+| 0:45 - 1:15 | 550k |
+| 1:15 - 2:00 | 310k |
+| 2:00 - 2:30 | 230k |
+| 2:30 - 3:00 | 175k |
+| 3:00 - 4:00 | 100k |
+| 4:00 - 5:00 | 60k |
+| 5:00 - 6:00 | 35k |
+| 6:00 - 6:40 | 20k |
+
+# Codecs and Containers
 webm is a container format that is a modified form of [.mkv](https://www.matroska.org/what_is_matroska.html)\
 That means there is not just *one* type of webm. It can be any combination of a supported video + supported audio track.\
 For the purpose of 4chan, you have [vp8](https://trac.ffmpeg.org/wiki/Encode/VP8) or [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) for video, [vorbis](https://xiph.org/vorbis/) or [opus](https://opus-codec.org/) for audio.\
@@ -38,7 +62,7 @@ If you come across a webm (or any container) and you want to know what's in it, 
 
 **Basically you want to use vp9 + opus in all circumstances. vp8 and vorbis are legacy codecs that perform objectively worse.**
 
-## webm vs mp4
+# webm vs mp4
 4chan supports only [h264](https://trac.ffmpeg.org/wiki/Encode/H.264) video with [aac](https://trac.ffmpeg.org/wiki/Encode/AAC) audio for mp4, so for the purposes of comparison, I'm talking about vp9+opus webm vs h264+aac mp4.\
 Side note: If you mix vp9+aac or h264+opus, you're gonna create an mkv that can't be posted to 4chan.
 - **Contrary to popular belief, vp9 is not objectively superior to vp9 in all circumstances.**
@@ -51,7 +75,7 @@ Side note: If you mix vp9+aac or h264+opus, you're gonna create an mkv that can'
 With all that said, the strategies for encoding mp4 are substantially the same as webm, so you can apply the same knowledge regardless of which you choose.\
 Generally speaking, I recommend webm by default and mp4 if your clip is very short or you know what you're doing.
 
-### Regarding YouTube
+## Regarding YouTube
 - Generally speaking, YouTube videos have h264, vp9, or av1 video streams, and audio that is opus or [aac-lc/mp4a.40.2](https://www.free-codecs.com/guides/understanding_the_differences_between_aac__aac-lc__and_aac-he.htm).
 - Livestreams are h264+aac and after the stream ends, they are re-encoded to vp9+opus. Apparently YouTube determined that the space savings from re-encoding to vp9 was worth it for playback, lending to the argument that webm is a good default.
 - Short videos are often encoded to av1+opus, so if you download a webm from YouTube and it's under the 4chan size limit, don't be surprised if you can't post it.
@@ -62,7 +86,7 @@ Generally speaking, I recommend webm by default and mp4 if your clip is very sho
 - /gif/: 300 seconds, 4MiB
 - All non-sound boards: 120 seconds, 4MiB
 
-### Base 1024 vs Base 1000 Bytes
+## Base 1024 vs Base 1000 Bytes
 This is a whole can of worms but important to understand. 4chan's size limits are the traditional 1024 based definition of Megabytes (Sometimes these are called [Mebibytes](https://en.wikipedia.org/wiki/Binary_prefix) with MiB to differentiate from base 1000 MB).
 
 For clarity, I will use `Gi, Mi, Ki` for base 1024 bytes and `G, M, K` for base 1000 bytes because I need to refer to both.
@@ -122,7 +146,7 @@ A few useful video filters to know:
 You can get crazy with `-filter_complex` by building an entire filter graph.\
 One use case for this is to take multiple segments of a video and concatenate them together in one operation. For more information, see [this](https://github.com/sriramcu/ffmpeg_video_editing) project.
 
-I'm not going to conver complex filters here, but read [this](https://trac.ffmpeg.org/wiki/FilteringGuide) and [this](https://medium.com/craftsmenltd/ffmpeg-basic-filter-graphs-74f287dc104e) and [this](https://lav.io/notes/ffmpeg-explorer/) if you're interested.
+I'm not going to cover complex filters here, but read [this](https://trac.ffmpeg.org/wiki/FilteringGuide) and [this](https://medium.com/craftsmenltd/ffmpeg-basic-filter-graphs-74f287dc104e) and [this](https://lav.io/notes/ffmpeg-explorer/) if you're interested.
 
 ## Multiple Audio Tracks
 How do we handle containers with multiple audio tracks? First, you have to figure out the index of the track by either inspecting it in a video player or with ffprobe:\
@@ -249,6 +273,7 @@ But we can generalize this statement to work for any sized input:\
 Obviously you don't want to keep the original resolution most of the time, but the trick is figuring out the right resolution.
 The table below is a good start:
 
+## Resolution Lookup Table
 | Duration | Size |
 | ----------- | ----------- |
 | < 30 seconds | 1920 x 1080 |
