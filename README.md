@@ -16,6 +16,7 @@ Contents:
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
   - [Clipping](#clipping)
   - [Filters](#filters)
+    - [Complex Filters](#complex-filters)
 - [Audio](#audio)
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
@@ -105,6 +106,7 @@ This is precise when explicitly re-encoding, but keep in mind that if you just c
 
 ## Filters
 [filters](https://ffmpeg.org/ffmpeg-filters.html) are really handy. You can add filters using `-vf` (video filter) or `-af` (audio filter).\
+See the official [Filter Guide](https://trac.ffmpeg.org/wiki/FilteringGuide) for more info.\
 A few useful video filters to know:
 - [blackframe](https://ffmpeg.org/ffmpeg-filters.html#blackframe) Use this to find the timestamp where the real video begins if it starts with black frames or has a fade in from black.
 - [crop](https://ffmpeg.org/ffmpeg-filters.html#crop) crops the video to whatever you want.
@@ -112,6 +114,12 @@ A few useful video filters to know:
 - [minterpolate](https://ffmpeg.org/ffmpeg-filters.html#minterpolate) intelligently reduces the framerate of the video using motion interpolation.
 - [scale](https://ffmpeg.org/ffmpeg-filters.html#scale-1) resizes the video.
 - [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) will burn-in subtitles from file.
+
+### Complex Filters
+You can get crazy with `-filter_complex` by building an entire filter graph.\
+One use case for this is to take multiple segments of a video and concatenate them together in one operation. For more information, see [this](https://github.com/sriramcu/ffmpeg_video_editing) project.
+
+I'm not going to conver complex filters here, but read [this](https://trac.ffmpeg.org/wiki/FilteringGuide) and [this](https://medium.com/craftsmenltd/ffmpeg-basic-filter-graphs-74f287dc104e) and [this](https://lav.io/notes/ffmpeg-explorer/) if you're interested.
 
 # Audio
 Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
