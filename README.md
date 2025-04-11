@@ -14,6 +14,7 @@ Contents:
 - [Size and Length Limits](#size-and-length-limits)
 - [ffmpeg](#ffmpeg)
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
+    - [Calculating Video Size](#calculating-video-size)
   - [Clipping](#clipping)
   - [Filters](#filters)
     - [Complex Filters](#complex-filters)
@@ -82,6 +83,7 @@ For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffm
 
 The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.org/wiki/Encode/VP9#twopass) encoding. On the first pass, ffmpeg builds a profile of the whole video that allows it to maximize compression on the next pass. Using average video bitrate (`-b:v`), the encoder will produce a file that has variable bitrate at any one point in time, but it averages out to the specified rate over the whole length of the clip. Basically it "saves" bits during sections that are highly compressible (black screens, no motion) and "spends" the saved bits when needed. This isn't unique to vp9, this is how two-pass encoding works for any codec.
 
+### Calculating Video Size
 Ignoring audio, your output video size is easily calculated:\
 `bitrate = size_limit / duration` where duration is in seconds.\
 Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
@@ -125,7 +127,7 @@ I'm not going to conver complex filters here, but read [this](https://trac.ffmpe
 ## Multiple Audio Tracks
 How do we handle containers with multiple audio tracks? First, you have to figure out the index of the track by either inspecting it in a video player or with ffprobe:\
 `ffprobe -v error -show_entries stream=index:stream_tags=language -select_streams a -of csv=p=0 input.mkv`\
-This will show you something like this:\
+This will show you something like this:
 ````
 1,eng
 2,jpn
