@@ -17,6 +17,7 @@ Contents:
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
   - [Music webms](#music-webms)
+- [Making Precisely Sized webms](#making-precisely-sized-webms)
 - [Resolution](#resolution)
 
 ## Codecs and Containers
@@ -166,6 +167,21 @@ Doing it with an animated gif is a little more tricky:\
 `ffmpeg -ignore_loop 0 -i dancing_baby.gif -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -b:v 108k -t 0:03:32 out.webm`
 - `-ignore_loop 0` will cause the gif to continually loop
 - `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
+
+## Making Precisely Sized webms
+Using all the above knowledge, we now know how to make a webm using 3 passes:
+- Render the audio: `ffmpeg -i input.mp4 -vn -c:a libopus -b:a 96k output.ogg`
+  - Get the size of the audio file in bytes
+  - Lookup the size limit in bytes (`6 * 1024 * 1024` or `4 * 1024 * 1024` depending on the board)
+  - `bitrate = (size_limit - audio_size) * 8 / 1000` that's your video bitrate in kbps. For this example let's say it's 715.
+- Run ffmpeg 1st pass
+  - `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 715k -async 1 -vsync 2 -pass 1 -an -f null /dev/null`
+  - or `NUL` instead of `/dev/null` if you're using Windows
+  - Note that on the first pass we do `-an` because ffmpeg is doing video stuff only
+- Run ffmpeg 2nd pass
+  - `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 715k -async 1 -vsync 2 -pass 2 -c:a libopus -b:a 96k out.webm`
+
+That'll produce a webm that's very close to the size you expect.
 
 # Resolution
 In ffmpeg, changing the resolution is done using the [scale](https://ffmpeg.org/ffmpeg-filters.html#scale-1) video filter.\
