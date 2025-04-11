@@ -29,6 +29,7 @@ Contents:
 - [Making Precisely Sized webms](#making-precisely-sized-webms)
 - [Resolution](#resolution)
 - [Subtitles](#subtitles)
+- [webm for 4chan](#webm-for-4chan)
 
 # Quick Reference
 tl;dr here's what you do up front
@@ -340,6 +341,8 @@ width, height = scale_to_1080(raw_width, raw_height)
 ````
 And yes, this is still valid for any resolution because what's being calculated is a *resolution limit*. All `scale_to_1080` does is align the resolution with the baked in assumption in the curve fit, which make sure that smaller inputs don't get reduced in size too much.
 
+**This method is far from perfect, but it gets the resolution in the right ballpark most of the time.** In practice, there are other considerations, like the amount of motion in the clip, the number of colors, number of scene changes, and more. Getting the resolution right is more of a subjective process, so it's difficult to come up with a purely mathematical solution that works unless we result to complex solutions like image analysis.
+
 # Subtitles
 Subtitle burn-in is pretty easy in ffmpeg using the [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) filter. You can specify external or embedded subs.
 - For internal subs: `-vf subtitles=input.mkv:si=1` where si is the subtitle index.
@@ -363,3 +366,12 @@ You can download YouTube subtitles with yt-dlp:\
 But ttml doesn't really work for ffmpeg so you'll have to convert to ass. This can be done with [ttml2ssa](https://github.com/Paco8/ttml2ssa).\
 Alternatively, use vtt subtitles:\
 `yt-dlp --write-sub --sub-lang en --sub-format vtt`
+
+Sometimes, embedded subtitles aren't usable by ffmpeg. In this case I recommend [handbrake](https://github.com/HandBrake/HandBrake) which is very good at recognizing obscure sub formats.
+
+# webm for 4chan
+[ 	![image.jpg](https://i.imgflip.com/5vzx2b.jpg)](https://i.imgflip.com/5vzx2b.jpg)
+
+Everything I discussed above is implemented in my [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan) python script. So if you want to see it in action, use the script. It prints out the calculations and ffmpeg commands so that you can understand exactly what it's doing. Use the `--dry_run` option if you just want to see the calculations and commands without rendering the webm.
+
+For the most part, the script does everything by default. You only have to specify options if you need to do something special like modify the audio bitrate or burn-in subtitles, etc.
