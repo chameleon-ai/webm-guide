@@ -13,6 +13,7 @@ Contents:
 - [Codecs and Containers](#codecs-and-containers)
 - [webm vs mp4](#webm-vs-mp4)
 - [Size and Length Limits](#size-and-length-limits)
+- [yt-dlp](#yt-dlp)
 - [ffmpeg](#ffmpeg)
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
     - [Calculating Video Size](#calculating-video-size)
@@ -97,6 +98,14 @@ Some systems display local file sizes in MB. So if you see that your file is 6.2
 When specifying bitrates in ffmpeg, the prefix `k` means Kilobits, so it's important to keep in mind that you're using the base 1000 definition of the term as well as *bits* so you have to divide by 8 to get bytes.
 
 Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/main) prints the final webm file size in KB and you want a file under 6144 or 4096
+
+# yt-dlp
+[yt-dlp](https://github.com/yt-dlp/yt-dlp) is pretty much the best way to download any video. It supports thousands of sites, not just YouTube.
+
+Most of the time, you just need to provide the URL and it will download the best available video by default. There are a couple handy things to know:
+- Download an upcoming or ongoing livestream: `yt-dlp --wait-for-video 30 --live-from-start`
+- Download the auto subtitles: `yt-dlp --write-auto-sub --skip-download`
+- Download only the section from 10:00 to the end of the video `yt-dlp --download-sections "*10:00-inf"`
 
 # ffmpeg
 [ 	![image.jpg](https://files.catbox.moe/rklvkb.png)](https://files.catbox.moe/rklvkb.png)
@@ -183,7 +192,7 @@ Since video is usually more important that audio for perception of quality, you'
 
 | Bitrate | Size at 3 minutes | Comments |
 | ----------- | ----------- | ----------- |
-| 320k | 7 MiB | Not pracical except for music under 2:30 from flac
+| 320k | 7 MiB | Not practical except for music under 2:30
 | 256k | 5.6 MiB | Upper practical limit for music webms
 | 192k | 4.2 MiB | Good for most high quality music
 | 160k | 3.5 MiB | Good for 5.1 surround sound
@@ -317,3 +326,27 @@ def scale_to_1080(width, height):
 width, height = scale_to_1080(raw_width, raw_height)
 ````
 And yes, this is still valid for any resolution because what's being calculated is a *resolution limit*. All `scale_to_1080` does is align the resolution with the baked in assumption in the curve fit, which make sure that smaller inputs don't get reduced in size too much.
+
+# Subtitles
+Subtitle burn-in is pretty easy in ffmpeg using the [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) filter. You can specify external or embedded subs.\
+- For internal subs: `subtitles=input.mkv:si=1` where si is the subtitle index.
+- For external subs: `subtitles=subs.ass`
+
+You can identify embedded subtitles using ffprobe:\
+`ffprobe -v error -select_streams s -of csv=p=0 -show_entries stream=index:stream_tags=language input.mkv`\
+Which will output something like this:
+````
+3,jpn
+4,eng
+````
+And just like the audio index, the number isn't the index you want to specify in ffmpeg. Count from 0 from the top.
+
+If you want to export the embedded subs to file:
+`ffmpeg -i input.mkv -map 0:s:1 subs.ass`
+- where `0:s:1` would specify the english subtitles and `0:s:0` would specify  the japanese subtitles as listed above.
+
+You can download YouTube subtitles with yt-dlp:\
+`yt-dlp --write-sub --sub-lang en --sub-format ttml`\
+But ttml doesn't really work for ffmpeg so you'll have to convert to ass. This can be done with [ttml2ssa](https://github.com/Paco8/ttml2ssa).\
+Alternatively, use vtt subtitles:\
+`yt-dlp --write-sub --sub-lang en --sub-format vtt`
