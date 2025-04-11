@@ -26,7 +26,6 @@ Contents:
   - [Music webms](#music-webms)
 - [Making Precisely Sized webms](#making-precisely-sized-webms)
 - [Resolution](#resolution)
-  - [Resolution Lookup Table](#resolution-lookup-table)
 
 # Quick Reference
 tl;dr here's what you do up front
@@ -274,8 +273,6 @@ But we can generalize this statement to work for any sized input:\
 
 Obviously you don't want to keep the original resolution most of the time, but the trick is figuring out the right resolution.
 The table below is a good start:
-
-## Resolution Lookup Table
 
 | Duration | Size |
 | ----------- | ----------- |
