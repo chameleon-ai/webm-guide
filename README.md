@@ -172,7 +172,7 @@ Doing it with an animated gif is a little more tricky:\
 Using all the above knowledge, we now know how to make a webm using 3 passes:
 - Render the audio: `ffmpeg -i input.mp4 -vn -c:a libopus -b:a 96k output.ogg`
   - Get the size of the audio file in bytes
-  - Lookup the size limit in bytes (`6 * 1024 * 1024` or `4 * 1024 * 1024` depending on the board)
+  - Lookup the size limit in bytes (`6 * 1024 * 1024` or `4 * 1024 * 1024`)
   - `bitrate = (size_limit - audio_size) * 8 / 1000` that's your video bitrate in kbps. For this example let's say it's 715.
 - Run ffmpeg 1st pass
   - `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 715k -async 1 -vsync 2 -pass 1 -an -f null /dev/null`
@@ -210,7 +210,7 @@ The table below is a good start:
 | 4:00 - 5:30 | 640 x 360 |
 | 5:30 - 6:40 | 480 x 270 |
 
-But of course, we can use math to do better than a lookup table. Resolution is better determined as a function of file size and duration. And resolution is better defined by the *total number of pixels* rather than assuming that the input is 16:9 1080p. Because we need a solution that scales well for 3:4 or square videos or whatever.
+Let's use math to do better than a lookup table. Resolution is better determined as a function of file size and duration. And resolution is better defined by the *total number of pixels* rather than assuming that the input is 16:9 1080p. Because we need a solution that scales well for 3:4 or square videos or whatever.
 
 So really, you need to account for the size of the audio just like when determining the video bitrate. Conveniently, the target video bitrate is exactly what we need because the bitrate itself was determined as a function of file size and duration.
 
