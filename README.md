@@ -14,6 +14,8 @@ Contents:
 - [Size and Length Limits](#size-and-length-limits)
 - [ffmpeg](#ffmpeg)
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
+  - [Clipping](#clipping)
+  - [Filters](#filters)
 - [Audio](#audio)
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
@@ -71,7 +73,7 @@ Side note: [webm-for-4chan](https://github.com/chameleon-ai/webm-for-4chan/tree/
 # ffmpeg
 [ 	![image.jpg](https://files.catbox.moe/rklvkb.png)](https://files.catbox.moe/rklvkb.png)
 
-Every solution out there is some kind of ffmpeg wrapper, so even if you use a GUI, the concepts discussed below still apply. The raw commands just might be presented in a different way.
+Every solution out there is some kind of ffmpeg wrapper, so even if you use a GUI, the concepts discussed below still apply. The raw commands are just presented differently.
 
 ## CRF vs Average Bitrate
 For [vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) (and [h.264](https://trac.ffmpeg.org/wiki/Encode/H.264)) encoding you have 2 methods: constrained quality (CRF) and average bitrate. For your typical non-4chan use-case you probably want CRF, but this produces a variable bit-rate that makes the file size unpredictable. You will get a *consistent* quality, but not the *best* possible quality, because at the end of the day, it all boils down to video bitrate. CRF is just a way of telling ffmpeg that you don't care about the specific bitrate or size, just make the perceived quality consistent. If you use CRF you'll just end up making webms too big or too small.
@@ -92,7 +94,26 @@ Then the ffmpeg command is:\
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
 
-## Audio
+## Clipping
+You can directly make a webm of any time slice using [seeking](https://trac.ffmpeg.org/wiki/Seeking):\
+`ffmpeg -ss 1:00:04.25 -t 45 -i input.mp4 output.webm`
+- `-ss` will seek to 1 hour, 4 seconds and 250 ms.
+- `-t` will take 45 seconds starting from the ss time.
+- Use `-to` instead of `-t` to specify an absolute timestamp
+
+This is precise when explicitly re-encoding, but keep in mind that if you just copy the streams (`-c:v copy -c:a copy`), that can result in a broken video at the edges due to missing keyframes.
+
+## Filters
+[filters](https://ffmpeg.org/ffmpeg-filters.html) are really handy. You can add filters using `-vf` (video filter) or `-af` (audio filter).\
+A few useful video filters to know:
+- [blackframe](https://ffmpeg.org/ffmpeg-filters.html#blackframe) Use this to find the timestamp where the real video begins if it starts with black frames or has a fade in from black.
+- [crop](https://ffmpeg.org/ffmpeg-filters.html#crop) crops the video to whatever you want.
+- [cropdetect](https://ffmpeg.org/ffmpeg-filters.html#cropdetect) automatically finds the edges of a letterboxed video. Run this as a first pass and use the result with crop.
+- [minterpolate](https://ffmpeg.org/ffmpeg-filters.html#minterpolate) intelligently reduces the framerate of the video using motion interpolation.
+- [scale](https://ffmpeg.org/ffmpeg-filters.html#scale-1) resizes the video.
+- [subtitles](https://ffmpeg.org/ffmpeg-filters.html#subtitles-1) will burn-in subtitles from file.
+
+# Audio
 Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
 For webm the audio codec is [libopus](https://ffmpeg.org/ffmpeg-codecs.html#libopus).
 
@@ -128,7 +149,7 @@ Since video is usually more important that audio for perception of quality, you'
 Of course for short webms this doesn't matter as much, but the bitrate adds up for long duration webms.
 Keep in mind that if you're getting your stuff from YouTube, that's usually at 128k so don't bother with higher bitrate.
 
-### Stereo and Mono Mixdown
+## Stereo and Mono Mixdown
 It's important to understand that the bitrate is the total bitrate *across all channels*, meaning that you can save on total bitrate by reducing the number of channels. This is especially pronounced for 5.1 surround sound, so if you're converting a movie clip or something, it's a good idea to mixdown to stereo.\
 In ffmpeg, this is `-ac 2` (2 audio channels) or `-ac 1` (1 audio channel)
 
@@ -152,7 +173,7 @@ print('Channel cosine similarity: {:.4f}%'.format(cosim * 100))
 
 **Basically if both tracks are highly similar, we can go ahead and mixdown to mono and cut the bitrate in half.** For short clips it's usually not worth it to do this, but as you can see from the table, a 56k mono track has significant space savings over a 96k stereo track at 3 minutes, granting about 1 MB to be used toward the video bitrate.
 
-### Music webms
+## Music webms
 Making a music webm is one of the easier things to do with ffmpeg. By music webm, I mean a webm with a static image and a song.\
 `ffmpeg -i cover.jpg -i input.mp3 out.webm`
 
