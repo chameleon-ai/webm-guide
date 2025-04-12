@@ -22,6 +22,7 @@ Contents:
   - [Filters](#filters)
     - [Complex Filters](#complex-filters)
   - [Multiple Audio Tracks](#multiple-audio-tracks)
+  - [Audio and Video Sync](#audio-and-video-sync)
 - [Audio](#audio)
   - [Audio Bitrates](#audio-bitrates)
   - [Stereo and Mono Mixdown](#stereo-and-mono-mixdown)
@@ -189,6 +190,13 @@ One minor quirk is that the index shown is not the index you need to specify in 
 Then, in ffmpeg you can use `-map` to specify the audio index.
 - `-map 0:a:0` would select the first track (english)
 - `-map 0:a:1` would select the second track (japanese)
+
+## Audio and Video Sync
+Sometimes an encode can get out of sync due to variable frame rate ([vfr](https://gist.github.com/rlaphoenix/2cadb7cc4050a33f1a6f08519530980c)) especially when [changing the framerate](https://trac.ffmpeg.org/wiki/ChangingFrameRate). In general, you want vfr because it efficiently decides how many frames are needed to represent a section of video.
+
+Use `-async 1 -vsync 2` when encoding.
+- `-async 1` will [prevent audio desync](https://lzone.de/blog/Easily-fix-async-video-with-ffmpeg)
+- `-vsync 2` will specify [vfr](https://ffmpeg.org/ffmpeg.html) video sync method
 
 # Audio
 Calculating the video bitrate is not all there is to it. You have to factor in the size of the audio as well.\
