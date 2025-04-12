@@ -17,6 +17,7 @@ Contents:
 - [ffmpeg](#ffmpeg)
   - [CRF vs Average Bitrate](#crf-vs-average-bitrate)
     - [Calculating Video Size](#calculating-video-size)
+    - [Preventing Size Overshoot](preventing-size-overshoot)
   - [Deadline and Multithreading](#deadline-and-multithreading)
   - [Clipping](#clipping)
   - [Filters](#filters)
@@ -142,6 +143,13 @@ Then run ffmpeg two-pass encoding:\
 - `-f null /dev/null` on pass 1 means no output video
   - Use `NUL` instead of `/dev/null` if you're using Windows
 
+### Preventing Size Overshoot
+Even though we can calculate the bitrate down to the exact byte, it's a *target* and ffmpeg can produce a file that's a little bigger or smaller than the target.\
+The longer the video, the more ffmpeg is likely to overshoot on size.\
+In general, round down to the nearest integer in kbps, and for clips over 2 or 3 minutes, reduce the target by another 2-4 kbps.
+
+It also appears that the h264 encoder is much worse about overshooting than vp9, so you may want to build in additional margin when making mp4.
+
 ## Deadline and Multithreading
 [libvpx-vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) has a couple options that affect quality and enconding speed.
 
@@ -214,7 +222,7 @@ Generally, you can estimate the audio size using the audio bitrate and duration.
 ### Audio Bitrates
 Choosing the right audio bitrate isn't as straightforward as video. In general you can go with 96k by default, but there are other considerations.
 
-Since video is usually more important that audio for perception of quality, you'll want to use the lowest audio bitrate you can get away with. This table will give you a good idea of how much space your audio takes up:
+Since video is usually more important than audio for perception of quality, you'll want to use the lowest audio bitrate you can get away with. This table will give you a good idea of how much space your audio takes up:
 
 | Bitrate | Size at 3 minutes | Comments |
 | ----------- | ----------- | ----------- |
