@@ -132,13 +132,13 @@ Then, divide that by the duration and there's your target bitrate in kbps.
 So for example, a `30 second` video is `49152 / 30 = 1638.4`
 
 Then run ffmpeg two-pass encoding:\
-`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1638.4k -pass 1 -an -f null /dev/null`\
-`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1638.4k -pass 2 -an output.webm`
+`ffmpeg -i in.mp4 -c:v libvpx-vp9 -b:v 1638k -pass 1 -an -f null /dev/null`\
+`ffmpeg -i in.mp4 -c:v libvpx-vp9 -b:v 1638k -pass 2 -an output.webm`
 - `-i` specifies the input file
 - `-c:v` specifies the video codec
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
-- `-f null /dev/null` on first pass means that no file will be created, just the ffmpeg log
+- `-f null /dev/null` on pass 1 means no output video
   - Use `NUL` instead of `/dev/null` if you're using Windows
 
 ## Deadline and Multithreading
