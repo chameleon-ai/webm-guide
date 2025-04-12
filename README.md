@@ -125,17 +125,21 @@ The way to go is average bitrate, specifically [two-pass](https://trac.ffmpeg.or
 ### Calculating Video Size
 Ignoring audio, your output video size is easily calculated:\
 `bitrate = size_limit / duration` where duration is in seconds.\
-Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 * 8 = 50331648` bits. Divide that by the video duration in seconds and there's your bitrate.\
-Then divide that by 1000 to get Kbps.
+Make sure your bitrate and size limit are the same units. For instance if you want to target a `6MiB` file, that's `6 * 1024 * 1024 = 6291456` bytes.\
+Represented as kilobits, that's `6291456 / 1024 * 8 = 49152`.\
+Then, divide that by the duration and there's your target bitrate in kbps.
 
-So for example, a `30 second` video is `50331648 / 30 = 1677721.6 bits/second`, or `1677kbps`
+So for example, a `30 second` video is `49152 / 30 = 1638.4`
 
-Then the ffmpeg command is:\
-`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1677k -an output.webm`
+Then run ffmpeg two-pass encoding:\
+`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1638.4k -pass 1 -an -f null /dev/null`\
+`ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1638.4k -pass 2 -an output.webm`
 - `-i` specifies the input file
 - `-c:v` specifies the video codec
 - `-b:v` specifies the video bitrate
 - `-an` means no audio
+- `-f null /dev/null` on first pass means that no file will be created, just the ffmpeg log
+  - Use `NUL` instead of `/dev/null` if you're using Windows
 
 ## Deadline and Multithreading
 [libvpx-vp9](https://trac.ffmpeg.org/wiki/Encode/VP9) has a couple options that affect quality and enconding speed.
@@ -273,7 +277,7 @@ Using all the above knowledge, we now know how to make a webm using 3 passes:
   - `video_size = size_limit - audio_size`
   - Get the total `duration` of the video in seconds
   - `bitrate = video_size / duration` that's your video bitrate in Bytes per second
-  - `bitrate_kbps = bitrate * 8 / 1000` that's your video bitrate in Kilobits per second. For this example let's say it's 715.
+  - `bitrate_kbps = bitrate * 8 / 1024` that's your video bitrate in kbps. For this example let's say it's 715.
 - Run ffmpeg 1st pass
   - `ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 715k -async 1 -vsync 2 -pass 1 -an -f null /dev/null`
   - or `NUL` instead of `/dev/null` if you're using Windows
