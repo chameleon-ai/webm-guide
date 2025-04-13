@@ -305,9 +305,9 @@ That'll produce a webm that's very close to the size you expect.
 
 # Resolution
 In ffmpeg, changing the resolution is done using the [scale](https://ffmpeg.org/ffmpeg-filters.html#scale-1) video filter.\
-`ffmpeg -i input.mp4 -vf scale=1280:720:force_original_aspect_ratio=decrease output.webm`
+`ffmpeg -i input.mp4 -vf scale=1280:-1 output.webm`
 - `-vf` applies a video filter, `scale` in this case
-- `force_original_aspect_ratio=decrease` preserves the original aspect ratio
+- `-1` scales the height dimension automatically
 
 But we can generalize this statement to work for any sized input:\
 `-vf scale='min(1280,iw)':'min(1280,ih):force_original_aspect_ratio=decrease'`
