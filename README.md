@@ -273,17 +273,20 @@ Making a music webm is one of the easier things to do with ffmpeg. By music webm
 However, this will use the default audio bitrate of 96k. We can be more explicit by setting the `-b:a` audio bitrate:\
 `ffmpeg -i cover.jpg -i input.mp3 -b:a 192k out.webm`
 
+Since the webm size is pretty much all music, finding the audio bitrate is just a function of the song duration:\
+`bitrate_kbps = size_limit / duration` where `duration` is seconds and size_limit is either 49152 for /wsg/ or 32768 for /gif/
+
 We can take this one step further by messing with the keyframes:\
-`ffmpeg -framerate 1 -loop 1 -i cover.jpg -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -g 212 -b:v 100k -t 0:03:32 out.webm`
+`ffmpeg -framerate 1 -loop 1 -i cover.jpg -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -g 212 -t 0:03:32 out.webm`
 - `-framerate` sets the frame rate to 1 fps. You don't need a 24fps static image, do you?
 - `-g` sets the [group-of-pictures](https://www.veneratech.com/understanding-gop-what-is-group-of-pictures-and-why-is-it-important/) interval to match the duration of the song, effectively making a video that only has one keyframe.
 - Note that 212 seconds = 3:32, the duration of the song
-- Even though the video bitrate `-b:v` is set to the high value of 100k, this is an upper limit. The output video stream size will be basically negligible.
 
 Doing it with an animated gif is a little more tricky:\
 `ffmpeg -ignore_loop 0 -i dancing_baby.gif -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -b:v 108k -t 0:03:32 out.webm`
 - `-ignore_loop 0` will cause the gif to continually loop
 - `-t 3:32` limits the video duration. You want this to match the song duration, otherwise you'll keep looping the gif after the song ends.
+- `-b:v` sets the target bitrate, ensuring that the video remains under the size limit
 
 # Making Precisely Sized webms
 Using all the above knowledge, we now know how to make a webm using 3 passes:
