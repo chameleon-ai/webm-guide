@@ -274,7 +274,8 @@ However, this will use the default audio bitrate of 96k. We can be more explicit
 `ffmpeg -i cover.jpg -i input.mp3 -b:a 192k out.webm`
 
 Since the webm size is pretty much all music, finding the audio bitrate is just a function of the song duration:\
-`bitrate_kbps = size_limit / duration` where `duration` is seconds and size_limit is either 49152 for /wsg/ or 32768 for /gif/
+`bitrate_kbps = size_limit / duration`\
+Where `duration` is seconds and `size_limit` is either `49152` for /wsg/ or `32768` for /gif/
 
 We can take this one step further by messing with the keyframes:\
 `ffmpeg -framerate 1 -loop 1 -i cover.jpg -i input.mp3 -c:a libopus -b:a 128k -c:v libvpx-vp9 -g 212 -t 0:03:32 out.webm`
