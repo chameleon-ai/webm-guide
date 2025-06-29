@@ -87,6 +87,7 @@ Generally speaking, I recommend webm by default and mp4 if your clip is very sho
 ## Regarding YouTube
 - Generally speaking, YouTube videos have h264, vp9, or av1 video streams, and audio that is opus or [aac-lc/mp4a.40.2](https://www.free-codecs.com/guides/understanding_the_differences_between_aac__aac-lc__and_aac-he.htm).
 - Livestreams are h264+aac and after the stream ends, they are re-encoded to vp9+opus. Apparently YouTube determined that the space savings from re-encoding to vp9 was worth it for playback, lending to the argument that webm is a good default.
+- According to [Google's documentation for vp9](https://developers.google.com/media/vp9/settings/vod), the suggested target bitrate for 1080p 60fps videos is about 3000kbps, and 1800kpbs for 30fps, which is good to use as an upper bound for your webms if encoding from a youtube source. For a 6MiB webm that's approximately 15 seconds at 3000kbps, and 25 seconds at 1800kbps.
 - Short videos are often encoded to av1+opus, so if you download a webm from YouTube and it's under the 4chan size limit, don't be surprised if you can't post it.
 
 ## Size and Length Limits
